@@ -1,0 +1,981 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% A catalog of fundamental algorithms
+% by wbb
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+\usepackage{clrscode}
+\usepackage{indentfirst}
+\usepackage{amsmath, amsfonts}
+
+\title{Fundamental algorithms}
+\author{Wang Bingbing}
+\renewcommand{\today}{May 2, 2010}
+
+\begin{document}
+
+\maketitle
+
+\section{Sorting}
+
+\emph{Problem Definition.}
+    The output sequence is an ordered permutation of the input sequence.
+    When the input is a file, the output is usually a distinct file; when
+    input is an array, the output is usually the same array.
+
+All sorting algorithms can be divided into two groups by whether it is only
+based on comparisons between elements.  The time complexity of all
+comparison-based sorting algorithms is at least $O(n\lg{n})$.  Other
+sorting algorithms can be linear in time.
+
+There is another problem closely related to sorting: selection problem.
+
+\subsection{General-Purpose Algorithms}
+The following algorithms sort an arbitrary $n$-element sequence.
+
+\begin{itemize}
+    \item Insertion sort
+        \begin{itemize}
+            \item efficient for small data sets
+            \item efficient for almost sorted data sets
+            \item more efficient than most other simple quadratic algorithms such
+                  as selection sort or bubble sort.
+            \item stable, in-place and online
+            \item Time complexity
+                \begin{itemize}
+                    \item Best case: $O(n)$
+                    \item Average case: $O(n^2)$
+                    \item Worst case: $O(n^2)$
+                \end{itemize}
+        \end{itemize}
+    \item Shell sort
+        \begin{itemize}
+            \item Analogous to insertion sort
+            \item non-stable, in-place
+            \item Time complexity
+                \begin{itemize}
+                    \item Worst case: $O(n^{3/2})$ using Hibband's increment
+                    sequence
+                \end{itemize}
+        \end{itemize}
+    \item Heapsort
+        \begin{itemize}
+            \item in-place, non-stable
+            \item Time complexity
+                \begin{itemize}
+                    \item expected and worst-case: $O(n\lg n)$
+                \end{itemize}
+        \end{itemize}
+    \item Merge sort
+        \begin{itemize}
+            \item stable sorting
+            \item external sorting
+            \item Time complexity
+                \begin{itemize}
+                    \item expected and worst-case: $O(n\lg n)$
+                \end{itemize}
+            \item Space complexiy: $O(n)$
+        \end{itemize}
+    \item Quicksort
+        \begin{itemize}
+            \item in-place, non-stable
+            \item works good in virtual memory environment
+            \item not very good for small input size
+            \item can be easily improved using good partition scheme such as
+                  median-of-3 and tail recursion
+            \item Time complexity
+                \begin{itemize}
+                    \item expected: $O(n\lg n)$
+                    \item worst-case: $O(n^2)$
+                    \item best-case: $O(n\lg n)$
+                \end{itemize}
+            \item Space complexity
+                \begin{itemize}
+                    \item stack depth can be reduced to $O(\lg n)$ using tail
+                          recursion
+                \end{itemize}
+        \end{itemize}
+\end{itemize}
+
+\subsection{Special-Purpose Algorithms}
+These algorithms lead to short and efficient programs for certain inputs.
+
+\begin{itemize}
+    \item Counting sort
+        \begin{itemize}
+            \item stable sorting
+            \item usually used in radix sort
+            \item Time complexity (assuming $n$ integers ranging from 1 to $k$)
+                \begin{itemize}
+                    \item $\Theta(n+k)$
+                \end{itemize}
+            \item Space complexity: $\Theta(k)$
+        \end{itemize}
+    \item Radix sort.
+        The following assumes $n$ $d$-digit numbers in which each digit can take on
+        up to $k$ possible values.
+        \begin{itemize}
+            \item Time complexity
+                \begin{itemize}
+                    \item $\Theta(d(n+k))$
+                \end{itemize}
+            \item Space complexity: $\Theta(k)$
+            \item LSD radix sort is stable
+            \item not make effective use of cache
+        \end{itemize}
+    \item Bucket sort.
+        Bucket sort runs in linear time when the input is drawn from a uniform
+        distribution over the interval $[0, 1)$.  The idear is to divide the
+        interval $[0, 1)$ into $n$ equal-sized subintervals, or {\em buckets}, and
+        then distribute the $n$ input numbers into the buckets.  Since the inputs
+        are uniformly distributed over $[0, 1)$, we don't expect many numbers to
+        fall into each bucket.  To produce the output, we simply sort the numbers
+        in each bucket and then go through the buckets in order, listing the
+        elements in each.
+    \item Bitmap sort.
+        The bitmap sort uses the fact that the integers to be sorted are
+        from a small range, contain no duplicates, and have no additional
+        data.  Running time is $\Theta(n)$.
+\end{itemize}
+
+\section{Selection}
+
+\emph{Problem Definition.}
+    The $k$th order statistic of a set of $n$ elements is the $k$th
+    smallest element.  The selection problem is to find the $k$th order
+    statistic from a set of $n$ distinct numbers.
+
+There are several special cases of this problem and these special problems
+can be solved more efficiently using particular method than the general
+problem.  There are some variants of this problem too, such as find the
+largest $k$ elements or the $k$ smallest elements.
+
+\subsection{Linear General-Purpose Algorithm}
+
+\begin{itemize}
+    \item Randomized-select, analogous to quicksort, randomly partition and
+    recursively select in one subarray (see Section 9.2 of \cite{clrs2})
+        \begin{itemize}
+            \item expected time: $\Theta(n)$, worst-case: $\Theta(n^2)$
+            \item can be tuned to a iterative version using tail recursion
+            \item can choose a good pivot by selecting from a small sample
+            of elements
+        \end{itemize}
+    \item Median-of-medians algorithm (due to Blum, Floyd, Pratt, Rivest
+          and Tarjan, see Section 9.3 of \cite{clrs2}).  The key idea is to
+          choose a good pivot by using median-of-medians method.
+        \begin{itemize}
+            \item worst-case time: $\Theta(n)$
+            \item the constant factor hidden in $\Theta(n)$ is large, great
+            breakthrough in theory but not practical
+            \item see Problem 9-3 of \cite{clrs2} for a improved version
+        \end{itemize}
+\end{itemize}
+
+\subsection{Non-linear general selection algorithms}
+
+\begin{itemize}
+    \item Sort the elements and return the $k$th position
+        \begin{itemize}
+            \item Time = $\Theta(n\lg n)$ assuming quicksort or heapsort
+        \end{itemize}
+    \item Quicksort the first $k$ elements and process the remaining
+    elements once per pass using inerstion sort
+        \begin{itemize}
+            \item Time = $\Theta(k\lg k+k(N-k))$
+        \end{itemize}
+    \item Make a max-heap of the first $k$ elements and process the remaining
+    elements once per pass maintaining max-heap property
+        \begin{itemize}
+            \item Time = $\Theta(k+(N-k)\lg k)$
+        \end{itemize}
+    \item Make a max-heap of $N$ elements and extract the $k$ smallest
+    elements
+        \begin{itemize}
+            \item Time = $\Theta(N+k\lg N)$
+        \end{itemize}
+\end{itemize}
+
+\subsection{Special-Purpose Algorithms}
+
+\begin{itemize}
+    \item Minimum/Maximum
+        \begin{itemize}
+            \item $n-1$ comparisons optimally (see Section 9.1 of
+                    \cite{clrs2})
+        \end{itemize}
+    \item Simultaneous minimum and maximum
+        \begin{itemize}
+            \item $\lceil \frac{3}{2}n\rceil$ comparisons optimally (see
+                    Ex. 9.1-2 of \cite{clrs2})
+            \item compaire pairs of elements from the input first with each
+            other, and then find the minimum from the smaller part and the
+            maximum from the larger part (see Section 9.1 of \cite{clrs2})
+        \end{itemize}
+    \item Select second smallest element
+        \begin{itemize}
+            \item Tournament sorting (see Ex. 9.1-1 of \cite{clrs2})
+            \item $n+\lceil\lg n\rceil-2$ comparisons in the worst case
+        \end{itemize}
+\end{itemize}
+
+\subsection{Using data structures to select in sublinear time}
+
+The strategy to find an order statistic in sublinear time is to store the
+data in an organized fashion using suitable data structures that facilitate
+the selection.  One such data structure is the order-statistic tree, which
+dynamically maintains the order statistic of each element (see Chapter 14
+of \cite{clrs2}).
+
+\subsection{Weighted median}
+
+\emph{Problem Definition.}
+    This is a variant of selection problem, which is specified as follows.
+    For $n$ distinct elements $x_1, x_2, \ldots, x_n$ with positive weights
+    $w_1, w_2, \ldots, w_n$ such that $\sum_{i=1}^{n}w_i=1$, the
+    {\em weighted(lower) median} is the element $x_k$ satisfying
+    \[ \sum_{x_i < x_k}w_i < \frac{1}{2} \]
+    and
+    \[ \sum_{x_i > x_k}w_i \leq \frac{1}{2}. \]
+
+This problem can be solved in $\Theta(n)$ worst-case time by using the linear
+select algorithm as a subroutine.
+
+\begin{codebox}
+\Procname{$\proc{Weighted-Median}(X)$}
+\li \If \id{length[X]} = 1
+\li     \Then \Return $x_1$
+\li \ElseIf $\id{length[X]} = 2$
+\li     \Then \If $w_1 \geq w_2$
+\li             \Then \Return $x_1$
+\li             \Else \Return $x_2$
+                \End
+\li \ElseNoIf
+\li     find the median $x_k$ of $X = {x_1, x_2, \ldots, x_n}$ by using
+            linear select algorithm
+\li     partition the set $X$ around $x_k$
+\li     compute $W_L = \sum_{x_i < x_k} w_i \mbox{ and } W_G = \sum_{x_i > x_k} w_i$
+\li     \If $W_L < 1/2 \mbox{ and } W_G < 1/2$
+\li         \Then \Return $x_k$
+\li     \ElseIf $W_L > 1/2$
+\li         \Then $w_k \gets w_k + W_G$
+\li             $X \gets {x_i \in X: x_i \leq x_k}$
+\li             \Return $\proc{Weighted-Median}(X')$
+\li     \ElseNoIf $w_k \gets w_k + W_L$
+\li         $X \gets {x_i \in X: x_i \geq x_k}$
+\li         \Return $\proc{Weighted-Median}(X')$
+        \End
+    \End
+\end{codebox}
+
+\section{Searching}
+
+\emph{Problem Definition.}
+    A search algorithm determines its input is a member of a given set, and
+    possibly retrieve associated information.  Efficient search entails
+    representing the set in a clever way.  So the searching problem mainly
+    focuses on the various data structures of representing dynamic sets.
+
+\subsection{Operations on a dynamic set}
+
+Operations on a dynamic set can be grouped into two categories: 
+{\em queries} ($\proc{Search}(S,k)$,  $\proc{Minimum}(S)$, $\proc{Maximum}(S)$,
+$\proc{Successor}(S,x)$, $\proc{Predecessor}(S,x)$) and 
+{\em modifying operations} ($\proc{Insert}(S, x)$, $\proc{Delete}(S,x)$).
+
+A dynamic set that only efficiently supports $\proc{Insert}$,
+  $\proc{Delete}$ and $\proc{Search}$ is called a {\em dictinary}.
+
+\subsection{Data structures of dynamic sets}
+
+\subsubsection{Arrays (ordered or unordered)}
+When the array is ordered, $\proc{Search}$ is efficient (using binary
+search) but $\proc{Insert}$ and $\proc{Delete}$ is inefficient.
+
+When the array is unordered, $\proc{Insert}$ and $\proc{Delete}$ is easy
+but $\proc{Search}$ is inefficient.
+
+Another inconvenience is that array implementations require that the
+maximum table size be known ahead of time or that the table undergo
+amortized growth (see subsection 17.4 of \cite{clrs2}).
+
+\subsubsection{Linked list (ordered or unordered)}
+Linked list is more flexible for modifying operations and we do not have to
+predict the maximum size of the table in advance.
+
+The disadvantage of linked lists is that we need extra space (for the
+links) and linked list is inefficient for query operation such as
+$\proc{Search}$ because we can not use binary search.
+
+\subsubsection{Hashing}
+Hasing is very efficient for $\proc{Search}$ operations but is not
+convenient to implement modifying operations.  Therefore it is a good
+choice if modifying operations are rare and $\proc{Search}$ operations are
+frequent.
+
+\subsubsection{Binary Search Tree (BST)}
+BSTs integrate the advantanges of linked lists being efficient for
+modification, and the advantanges of arrays being efficient to search
+(binary search).  
+
+No matter what node we start at in a height-$h$ binary search tree, $k$
+successive $\proc{Predecessor}$ or $\proc{Successor}$ take $O(k+h)$ time 
+(See Ex. 12.2-8 of \cite{clrs2}).  $\proc{Search}$ is proportionate to 
+the height of the tree.
+
+But when BSTs become quitely unbalanced, the search operation becomes
+linear in time.  So we have to rebalance the tree when necessary.  There
+are three general approaches to providing performance guanrantees in
+algorithm design: {\em randomize}, {\em amortize} and {\em optimize}.  And
+these approaches can be used to solve the balance problem.
+
+\emph{Randomization.}
+    A {\em randomized} algorithm introduces random decision making into the
+    algorithm itself, to reduce dramatically the chance of a worst-case
+    scenario (no matter what the input).  Quicksort is a example of this
+    method.  {\em Randomized BSTs} and {\em skip lists} are two simple ways to
+    use randomization in dynamic set implementations to give efficient
+    implementations of all dynamic set operations.  There algorithms are simple
+    and are broadly applicable.
+
+\emph{Amortization.}
+    An {\em amortization} approach is to do extra work at one time to avoid
+    more work later, to be able to provide guanranteed upper bounds on the
+    average per-operation cost (the total cost of all operations divided by the
+    number of operations).  {\em Splay BSTs} are an example of using this
+    method.
+
+\emph{Optimization.}
+    An {\em optimization} approach is to take the trouble to provide
+    performance guarantees for every operation.  Various methods have been
+    develped to take this approach.  These methods require that we maintain
+    some structural infomation in the trees to help to balance it.  Generally
+    there are two techniques to rebalance the trees: by rotations or by
+    manipulating the node's degrees.
+
+According to above discussion we can divide the various BSTs into three
+groups, in which those using optimization method can be furter divided into
+two groups according to its rebalancing schemes.
+
+\begin{itemize}
+    \item Randomization
+        \begin{itemize}
+            \item Randomly built BST
+            \item Treap
+            \item Skip list
+        \end{itemize}
+    \item Amortization
+        \begin{itemize}
+            \item Splay trees
+        \end{itemize}
+    \item Optimization
+        \begin{itemize}
+            \item AVL trees
+            \item Red-Black trees
+            \item B-tree (including 2-3 trees and 2-3-4 trees)
+        \end{itemize}
+\end{itemize}
+
+\subsection{Randomized BSTs}
+
+If we insert keys in random order into an empty tree, the constructed tree
+is a randomized BST and its height is $\Theta(\lg n)$ in expected case.  So
+search is fast in expected case.  The randomization property of the BST
+built this way totally depends on the randomness of the input. But what if
+the input is not randomized?  Yes, we can randomize the input sequence.
+But what if we do not have all the items at once?  There are two ways to
+circumvent this problem: (1) root insertion with some probability and (2)
+{\em Treap}.
+
+\emph{Root insertion.}
+    The root insertion method is simple: when we insert a new node into the
+    tree of $n$ nodes, the new node should appear at the root with the
+    probability $1/(n+1)$, so we simply make a randomized decision to use root
+    inseriton with that probability.  Otherwise, we recursively use the method
+    to insert the new item into the left subtree if the item's key is less than
+    the key at the root, and into the right subtree if the item's key is
+    greater. See subsection 13.1 of \cite{Sedgewick98} for more details.
+
+\emph{Treap.}
+    Treap is a binary search tree.  Each node in the tree has a key and has a
+    {\em priority}, which is a random number chosen when inserted.  The nodes
+    in the treap are ordered so that the keys obey the binary search tree
+    property and the priorities obey the min-heap property, hence the word
+    "treap".
+
+    Inserting a new node into treap is similar to into the BST, but if min-heap
+    property is violated, we need do rotations to fix it.  Expected number of
+    rotations performed when inserting a node into a treap is less than 2.
+    See problem 13-4 of \cite{clrs2} for more details.
+
+\subsubsection{Skip list}
+
+The structure of skip list is similar to a singly-linked list and its
+behavior is like a BST.  It is also a randomized data structure and is very
+easy to understand and to be implemented.  See subsection 13.5 of
+\cite{Sedgewick98} for more details.
+
+\subsubsection{Amortized BSTs}
+
+\subsubsection{Splay trees}
+
+Splay insertion brings newly inserted nodes to the root using the rotations
+similar to root insertion but {\em different}.  When we insert a node into
+a BST using splay insertion, we not only bring that node to the root, but
+also bring the other nodes that we encounter (on the search path) closer to
+the root.  This property holds if we implement the search operation such
+that it performs the splay transformations during the search.
+
+Splay trees need not store any bookkeeping infomaiton and have a good
+amortized performance ganrantee: we ganrantee not that each operation is
+efficient but rather that the average cost of all the operations performed
+is efficient.
+
+See \cite{Sedgewick98} and \cite{Sleator85} for more details on splay
+trees.
+
+\subsection{Optimized BSTs}
+
+\subsubsection{AVL trees}
+
+The AVL tree has the property that its subtrees' heights differ at most 1.
+It was called the balance condition.  In general AVL trees are more
+balanced than a red-black tree, so it is more efficient for look-up-intense
+applications.  Of course it is more difficult to maintain the balance
+condition.
+
+It needs to store a balance factor or subtree size in each node.  Its
+height is limited to $1.44\lg n$.
+
+The time complixity of its operations is as follows.
+    \begin{itemize}
+        \item Insert \\
+            Time = $O(\lg n)$.  Using rotations to maintain
+            balance need only one single-rotation or double-rotation.
+        \item Delete \\
+            Time = $O(\lg n)$, $O(\lg n)$ for lookup plus maximum
+            of $O(\lg n)$ rotations.
+    \end{itemize}
+
+AVL trees are more rigidly balanced than red-black trees, leading to slower
+insertion and removal but faster retrieval.
+
+\subsubsection{Red-Black trees}
+
+Compared with AVL trees, red-black trees loosen the balance condition to
+get faster insertion and deletion while fast search.  Its height is limited
+to $2\lg n$.  It needs to store the infomation indicating whether the node
+is red or black.
+
+The time complixity of insertion and deletion is as follows.
+    \begin{itemize}
+        \item Insert \\
+            Time = $O(\lg n)$, need at most 2 rotations.
+        \item Delete \\
+            Time = $O(\lg n)$, need at most 3 rotations.
+    \end{itemize}
+
+
+\subsubsection{B-tree}
+
+Each B-tree has a related fixed integer $t \geq 2$ called the {\em minimum
+degree} of the B-tree: every node other than the root must have at least
+$t-1$ keys (and thus at least $t$ children) and every node (including the
+root) can contain at most $2t-1$ keys (and thus at most $2t$ children).
+
+2-3-4 tree is a special B-tree with $t=2$.  2-3 tree is transformed from
+2-3-4 tree.  They have a close relation to red-black trees.  The red-black
+tree can be interpreted as a 2-3-4 tree: if we let the black nodes absorb
+the red nodes which are its children then the resulted tree is a
+fully balanced tree according to red-black property and is a 2-3-4 tree.
+For their relations, see 13.4 of \cite{Sedgewick98}.
+
+Due to low height of B-tree, it is usually implemented on magnetic disks to
+store huge info to minimize disk I/O operations.
+
+
+\section{Algorithms on strings}
+
+There are many problems involving strings such as sorting, matching, searching for a
+particular string in a long text, longest common substring (LCS), longest
+duplicated substring or palindromes, etc.  To solve these problems
+efficiently we can preprocess the strings and represent them in a
+specific data structure.  The following are some frequently used data
+structures to represent strings.
+
+\subsection{Data structures on strings}
+
+\emph{Radix trees for bit strings.}
+    This data structure is very convenient to sort the bit strings in
+    time proportionate to the sum of length of all bit strings.  See
+    problem 12-2 of \cite{clrs2}.
+
+\emph{Suffix trees.}
+    Suffix tree is a great data structure to attack many problems about
+    strings.  A search tree that is built from keys defined by string
+    pointers into a text string is called a {\em suffix tree}.  It
+    represents all suffixes of a string, hence its name.  Suffix
+    tree can be represented by any data structure that can admit
+    variable-length keys such as {\em trie} (section 15.2 of
+    \cite{Sedgewick98}), {\em patricia tries} (section 15.3 of
+    \cite{Sedgewick98}), {\em ternary search trie} (TST, section 15.4 of
+    \cite{Sedgewick98}) and BSTs.  But trie-based methods are
+    particularly suitable, because (except for the trie methods that do
+    one-way branching at the tails of keys) their running time does not
+    depend on the key length, but rather depends on only the number of
+    digits required to distinguish among the keys. This characteristic
+    lies in direct constrast to, for example, hasing algorithms, which
+    do not apply immediately to this problem because their running time
+    is proportionaly to the key length.  There is a on-line linear
+    algorithm to construct the suffix tree (\cite{ukkonen}).
+
+\emph{Suffix array.}
+    Suffix array, which is an array of pointers to every character of
+    a string array, is similar to suffix trees but simpler.  It can be
+    constructed by initializing each element to point to the
+    corresponding character in the string and then sort it.  See
+    section 15.2 of \cite{bently00} for more details.
+
+\subsection{Algorithms on strings}
+
+\begin{itemize}
+    \item String matching
+        \begin{itemize}
+            \item Rabin-Karp algorithm (32.2 of \cite{clrs2})
+            \item Finit automata (32.3 of \cite{clrs2})
+            \item Knuth-Morris-Pratt algorithm (32.4 of \cite{clrs2})
+            \item Suffix array or suffix tree.  Preprocess the texts to
+            represent it in a suffix array or suffix tree then process the
+            searching requests.  This method is very efficient when the
+            text is fixed and the searching request is frequent.
+        \end{itemize}
+    \item Longest Common Substring (LCS)
+        \begin{itemize}
+            \item Using suffix array or suffix tree can solve it in linear
+            time.  See problem 15.9 of \cite{bently00}.
+        \end{itemize}
+    \item Longest substring that occurs more than M times
+        \begin{itemize}
+            \item Using suffix array can solve it in linear time.  See
+            problem 15.8 of \cite{bently00}.
+        \end{itemize}
+    \item Longest palindrome in a string
+        \begin{itemize}
+            \item Similar to the previous problem.  It can be solved in
+            linear time using suffix array.
+        \end{itemize}
+\end{itemize}
+
+\section{Graph Algorithms}
+
+\subsection{Minimum Spanning Trees (MST)}
+
+The two algorithms to compute MST both have the following general forms.
+
+\begin{codebox}
+\Procname{$\proc{Generic-MST}(G, w)$}
+\li $A \gets \emptyset$
+\li \While $A$ does not form a spanning tree
+\li     \Do find an edge $(u, v)$ that is safe for $A$
+\li         $A \gets A \cup \{(u, v)\}$
+        \End
+\li \Return $A$
+\end{codebox}
+
+In Kruskal's algorithm, the set $A$ is a forest.  The safe edge added to
+$A$ is always a least-weight edge in the graph that connects two distinct
+components.  In Prim's algorithm, the set $A$ forms a single tree.  The
+safe edge added to $A$ is always a least-weight edge connecting the tree to
+a vertex not in the tree.
+
+\subsubsection{Kruskal's Algorithm}
+
+The running time of Kruskal's algorithm depends on the implementation of
+disjoint-set data structure.  If the disjoint-set is implemented using a
+forest with the union-by-rank and path-compression heuristics (see Chapter
+21 of \cite{clrs2}) the running time is $O(E\lg E + (V+E)\alpha(V))$ in which
+$\alpha(V)$ is approximately a constant.
+
+\subsubsection{Prim's Algorithm}
+
+The runnint time of Prim's algorithm depends on the implementation of
+priority queue.
+
+Time = $\Theta(V)\cdot T_{\proc{Extract-Min}} + 
+        \Theta(E)\cdot T_{\proc{Dcrease-Key}}$
+
+\begin{center}
+\begin{tabular}{c c c c}
+    \hline
+    $\Theta$ & $T_{\proc{Extract-Min}}$ & $T_{\proc{Decrease-Key}}$ & Total \\
+    \hline
+    Binary Heap     & $O(\lg(V))$ & $O(\lg(V))$ & $O(E\lg(V))$   \\
+    Fibonacci Heap  & $O(\lg(V))$ & $O(1)$       & $O(E+V\lg(V))$ \\
+                    & amortized   & amortized    & worst case      \\
+    \hline
+\end{tabular}
+\end{center}
+                  
+
+\subsection{Single-Source Shortest Path (SSSP)}
+
+\subsubsection{Dijkstra's algorithm}
+
+\begin{itemize}
+    \item require non-negative weight, directed or undirected
+    \item greed algorithm
+    \item similar to Prim's algorithm and breadth first search
+    \item time = $\Theta(V\cdot T_{\proc{Extract-Min}} + E\cdot
+            T_{\proc{Decrease-Key)}}$
+        \begin{itemize}
+            \item[-] $O(E\lg(V))$ using binary heap
+            \item[-] $O(E+V\lg(V))$ using Fibonacci heap
+        \end{itemize}
+\end{itemize}
+
+When $w(u, v) = 1$ for all $(u,v) \in E$, BFS can be used to solve SSSP in
+$O(V+E)$ time.
+
+\subsubsection{Bellman-Ford Algorithm}
+
+\begin{itemize}
+    \item a general algorithm, can be applied for various graphs
+    \item can determine negative-weight cycles
+    \item Time: $O(VE)$
+    \item can be used to solve a specific linear programming problem:
+          systems of difference constraints in $O(mn)$ time
+       \begin{itemize}
+            \item[-] Bellman-Ford maximize $\sum_{i=1}^{n}{x_i}$ subject to
+                     $Ax \leq b$ and $x_i \leq 0$ for all $x_i$ (see Ex. 24.4-8 in
+                     \cite{clrs2})
+            \item[-] Bellman-Ford minimize $\max\{x_i\}-\min\{x_i\}$ subject to
+                     $Ax \leq b$ (see Ex. 24.4-9 in \cite{clrs2})
+       \end{itemize}
+\end{itemize}
+
+\subsubsection{Single-source shortest paths in directed acylic graphs}
+
+If the graph is acylic we can compute shortest paths faster than
+Bellman-Ford by relaxing edges in some order (topological order on the vertices).
+
+\begin{codebox}
+\Procname{$\proc{Dag-Shortest-Paths}(G, w, s)$}
+\li topologically sort the vertices of $G$
+\li \Comment Initialize distance of $s$ to each vertex.
+\li \For each vertex $v \in V[G]$
+\li     \Do $d[v] \gets \infty$
+\li         $\pi[v] \gets \const{nil}$
+        \End
+\li $d[s] \gets 0$
+\li \For each vertex $u$, taken in topologically sorted order
+\li     \Do \For each vertex $v \in \id{Adj}[u]$
+\li             \Do \proc{Relax}(u, v, w)
+                \End
+        \End
+\end{codebox}
+
+The running time is $O(V+E)$.
+
+
+\subsection{All-Pairs Shortest Paths}
+
+\subsubsection{Floyd-Warshall algorithm}
+
+The Floyd-Warshall algorithm is a dynamic programming algorithm.  The key
+idea is to define a clever subproblem.  Let $d_{ij}^{(k)}$ be the weight of
+a shortest path from vertex $i$ to vertex $j$ for which all intermediate
+vertices are in the set ${1, 2, \ldots, k}$.  When $k = 0$, a path from
+vertex $i$ to vertex $j$ with no intermediate vertex numbered higher than
+$0$ has no intermediate vertices at all.  Such a path has at most one edge,
+and hence $d_{ij}^{(0)} = w_{ij}$.  A recursive definition following the
+above discussion is given by
+\begin{displaymath}
+d_{ij}^{(k)} = \left\{
+    \begin{array}{ll}
+        w_{ij}  & \textrm{if $k = 0$,} \\
+        \min{\left(d_{ij}^{(k-1)},d_{ik}^{(k-1)}+d_{kj}^{(k-1)}\right)} & \textrm{if $k
+                \geq 1$.} \\
+    \end{array} \right.
+\end{displaymath}
+Because for any path, all intermediate vertices are in the set ${1, 2,
+\ldots, n}$, the matrix $D^{(n)} = (d_{ij}^{(n)})$ gives the final answer:
+$d_{ij}^{(n)} = \delta(i,j)$ for all $i, j \in V$.
+
+The running time of Floyd-Warshall algorithm is $O(V^3)$ and it can detect
+the presence of negative-weight cycles by checking whether the diagonal of
+the matrix $D^{(n)}$ has any negative element.
+
+\emph{Transitive closure of a directed graph.}
+    The Floy-Warshall algorithm can be modified a little to compute the
+    transitive closure of a directed graph.  This method involse the
+    substitution of the logical operations $\lor$ (logical OR) and $\land$
+    (logical AND) for the arithmetic operations min and + in the Floyd-Warshall
+    algorithm.  Hence the running time is also $O(V^3)$.
+
+\subsubsection{Johnson's algorithm}
+
+There is another simple technique to compute all-pairs shortest paths: run
+Dijkstra's algorithm using each vertex as the source.  Then the running
+time is $O(V^2\lg{V}+VE)$ (assume using Fibonacci-heap).  But there is a
+problem: the Dijkstra's algorithm can not be applied if a negative weight
+exists.  The key idea of Johnson's algorithm is to circumvent this problem
+by {\bf\em reweighting} all edges so that the new weight $\widehat{w}$ of 
+each edge is non-negative.  The new set of edge weights $\widehat{w}$ must
+satisfy two important properties,
+    \begin{enumerate}
+        \item For all pairs of vertices $u,v \in V$, a path $p$ is a
+        shortest path from $u$ to $v$ using weight function $w$ if\mbox{}f $p$ is
+        a shortest path from $u$ to $v$ using weight function $\widehat{w}$.
+        \item For all edges $(u,v)$, the new weight $\widehat{w}(u,v)$ is
+        nonnegative.
+    \end{enumerate}
+
+Johnson's algorithm defines the new weight function as follows
+\[ \widehat{w}(u,v) = w(u,v) + h(u) - h(v). \]
+in which $h$ is a function mapping vertices to real numbers.
+And this new weight function is guaranteed to satisfy the above first
+property.  Then we want $\widehat{w}(u,v)$ to be nonnegative.  This is
+equivalent to finding some $h$ so that $h(v)-h(u) \leq w(u,v)$ holds.  
+In fact this problem is a special case of linear programming, which can be
+solved using Bellman-Ford algorithm.
+
+The Johnson's algorithm is described as follows.
+\begin{description}
+    \item[S1.] Solve the system of difference constraints: $h(v)-h(u) \leq
+    w(u, v)$ by using Bellman-Ford algorithm.  If this constraints can not
+    be satisfied then print an error message and exit.
+    \item[S2.] Reweighting.  Assign a new weight $\widehat{w}(u,v) = w(u,v)+h(u)-h(v)$ to
+    each edge.
+    \item[S3.] Run Dijkstra's algorithm $|V|$ times to compute
+    $\widehat\delta(u,v)$ for all $u, v \in V[G]$.
+    \item[S4.] Compute the shortest path $\delta(u,v)$ of original graph
+    which is equal to $\widehat\delta(u,v) + h(v) - h(u)$.
+\end{description}
+
+If the min-priority queue in Dijkstra's algorithm is implemented by a
+Fibonacci heap, the running time of Johnson's algorithm is
+$O(V^2\lg{V}+VE)$.  The simpler binary min-heap implementation yields a
+running time of $O(VE\lg{V})$, which is still asymptotically faster than
+the Flod-Warshall algorithm if the graph is sparse.
+
+\subsection{Depth-First search and Topological Sort}
+
+Topological sort of a dag can be solved by DFS.  The algorithm is as
+follows.
+
+\begin{codebox}
+\Procname{$\proc{Topological-Sort}(G)$}
+\li call DFS(\id{G}) to compute finishing times $f[v]$ for each vertex $v$ 
+    as each vertex is finised, 
+    \Indentmore
+\zi     insert it onto the front of a linked list
+    \End
+\li \Return the linked list of vertices
+\end{codebox}
+
+The running time is $\Theta(V+E)$.  Note topological sort can be only
+applied on a directed acyclic graph.  There is not a topological sort order if 
+a graph has a cycle.  And this situation can be detected by DFS algorithm.
+A directed graph \id{G} is acyclic if\mbox{}f a dpeth-first search of \id{G} yields no
+back edges.
+
+\subsection{Depth-First Search and Strongly connected components}
+
+Let $G^{SCC}$ be the component graph of a directed graph $G$ and $G^T$ be
+the transpose of $G$.  The key idea of the algorithm computing strongly
+connected components by DFS is: first, compute the topologically sorted
+order of $G$ by which we can deduce the topologically sorted order of
+$G^{SCC}$ (see Lemma 22.14 of \cite{clrs2}); second, call DFS($G^T$) visiting
+vertices in the topologically sorted order of $G^{SCC}$, which is the
+reverse of the topologically sorted order of $(G^T)^{SCC}$. Then the
+vertices of each tree in the depth-first forest form a separate strongly
+connected component.
+
+\begin{codebox}
+\Procname{$\proc{Strongly-Connected-Components}(G)$}
+\li call DFS(\id{G}) to compute finishing times \id{f[u]} for each vertex
+    $u$
+\li compute $G^T$
+\li call DFS($G^T$), but in the main loop of DFS, consider the vertices 
+    \Indentmore
+\zi in order of decreasing \id{f[u]} (as computed in line 1)
+    \End
+\li output the vertices of each tree in the depth-first forest formed in
+    \Indentmore
+\zi line 3 as a separate strongly connected component
+\end{codebox}
+
+The running time of this algorithm is $\Theta(V+E)$.
+
+For a undirected graph, the connected components can be computed by running
+DFS once and then the vertices of each tree in the depth-first forest is a
+separate connected component.
+
+
+\section{Randomness}
+
+\subsection{Random Sample}
+
+\emph{Problem Definition.}
+    The input consists of two integers $m$ and $n$, with $m < n$. The
+    output is a sorted list of $m$ random integers in the range $0..n-1$ in
+    which no integer occurs more than once.
+
+\subsubsection{Algorithm S1}\label{algoset}
+
+This algorithm is straightforward: insert random integers into an initially
+empty set until there are enough.  It comes from Section 12.3 of
+\cite{bently00}.
+
+\begin{codebox}
+\Procname{$\proc{Random-Select}(m, n)$}
+\li $\id{S} \gets \emptyset$
+\li \While $\id{size[S]} < m$
+\li \>\Comment Invariant: $S$ contains a random sample of \id{size[S]} integers in
+\zi \>\> the range $0..n-1$.
+\li \Do $\id{t} \gets \func{rand}() \% \id{n}$
+\li     \If $\id{t} \notin S$
+\li         \Then $S \gets S \cup \{\id{t}\}$
+        \End
+    \End
+\li print the elements of \id{S} in sorted order
+\end{codebox}
+
+This algorithm has a flaw: if the random generator {\tt RandInt} is not
+truly random, the algorithm won't even terminate.
+
+\subsubsection{Algorithm K} 
+
+The following algorithm comes from Section 3.4.2 of Knuth's
+\emph{Seminumerical Algorithms}.
+
+\begin{codebox}
+\Procname{$\proc{Random-Select}(m, n)$}
+\li $\id{s} \gets \id{m}$
+\li $\id{r} \gets \id{n}$
+\li \For $\id{i} \in [0, n)$
+\li     \Do \If $(\func{rand}() \% \id{r}) < s$
+\li             \Then print $i$
+\li                   $s \gets s - 1$
+            \End
+\li         $\id{r} \gets \id{r} - \const{1}$
+        \End
+\end{codebox}
+
+\subsubsection{Algorithm S2}
+
+Another way to generate a sorted subset of random integers is to shuffle an
+$n$-element array that contains the numbers $0..n-1$, and then sort the
+first $m$ for the output.
+
+This algorithm also comes from Section 12.3 of \cite{bently00}.
+
+\begin{codebox}
+\Procname{$\proc{Random-Select}(m, n)$}
+\li \For $\id{i} \in [0, n)$
+\li \Do $x[i] \gets i$
+    \End
+\li \For $\id{i} \in [0, m)$
+\li \Do $\id{j} \gets \func{RandInt}(i, n-1)$
+\li     Exchange $x[i] \longleftrightarrow x[j]$
+    \End
+\li Sort $x[0..m-1]$ into increasing order and then print them.
+\end{codebox}
+
+This algorithm uses $\Theta(n)$ space and $O(n+m\log{m})$ time.
+
+\subsubsection{Algorithm F1}
+
+This algorithm is a improved version of \ref{algoset} due to Robert Floyd.
+It only uses exactly $m$ calls of {\tt RandInt}.  See \cite{bently87} for
+more details.
+
+\begin{codebox}
+\Procname{$\proc{Random-Select}(m, n)$}
+\li $\id{S} \gets \emptyset$
+\li \For $\id{j} \gets n-m+1$ \To $n$
+\li     \Do $\id{t} \gets \func{RandInt}(1, j)$
+\li         \If $\id{t} \notin S$
+\li             \Then 
+\li                 $S \gets S \cup \{\id{t}\}$
+\li         \Else
+\li             $S \gets S \cup \{\id{j}\}$
+            \End
+        \End
+\end{codebox}
+
+This algorithm uses $O(1)$ space and $O(m)$ time.
+
+\subsection{Permutation}
+
+\emph{Problem Definition.}
+    The input consists of two integers $m$ and $n$, with $m < n$. The
+    output is a random sequence of $m$ integers in the range $0..n-1$ in
+    which no integer occurs more than once.
+    
+It is also known as \emph{shuffle}.
+
+\subsubsection{Algorithm F2}
+
+This algorithm is similar to the previous algorithm F1.  See \cite{bently87} for
+more details.
+
+\begin{codebox}
+\Procname{$\proc{Random-Permutation}(m, n)$}
+\li $\id{S} \gets \emptyset$
+\li \For $\id{j} \gets n-m+1$ \To $n$
+\li     \Do $\id{t} \gets \func{RandInt}(1, j)$
+\li         \If $\id{t} \notin S$
+\li             \Then 
+\li                 prefix \id{t} to \id{S}
+\li         \Else
+\li             insert \id{j} in \id{S} after \id{t}
+            \End
+        \End
+\end{codebox}
+
+\subsubsection{Fisher-Yates shuffle}
+
+Randomly permute $N$ elements by exchanging each element $e_i$ with a
+random element from $i$ to $N$.  It runs in linear time.
+
+\begin{codebox}
+\Procname{$\proc{Random-Permutation}(m, n)$}
+\li \For $\id{i} \in [0, n)$
+\li \Do $x[i] \gets i$
+    \End
+\li \For $\id{i} \in [0, m)$
+\li \Do $\id{j} \gets \func{RandInt}(i, n-1)$
+\li     Exchange $x[i] \longleftrightarrow x[j]$
+    \End
+\end{codebox}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The Bibliography 
+% (need to proccess 2 passes)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\pagebreak
+\begin{thebibliography}{10} % a guess of max # of references
+    \bibitem[CLRS 2001]{clrs2} 
+        Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest and
+        Clifford Stein, \emph{Introduction to Algorithms}, Second Edition,
+        The MIT Press, 2001.
+    \bibitem[Sedgewick 1998]{Sedgewick98} 
+        Robert Sedgewick, \emph{Algorithms in C, Parts 1-4: Fundamentals,
+        Data Structures, Sorting, Searching}, Third Edtion, Addison-Wesley, 1998.
+    \bibitem[Sleator 1985]{Sleator85} 
+        D. Sleator and R. E. Tarjan, ``Self-adjusting binary search
+        trees,'' \emph{Journal of the ACM 32}, 1985.
+    \bibitem[Ukkonen]{ukkonen}
+        Esko Ukkonen, ``On-line construction of suffix trees''.
+    \bibitem[Bently 2000]{bently00}
+        Jon Bentley, \emph{Programming Pearls}, Second Edition, Addison
+        Wesley, 2000.
+    \bibitem[Bently 1987]{bently87}
+        Jon Bentley, ``Programming Pearls: a sample of brilliance'',
+        \emph{Communications of the ACM}, Vol. 30:9, Sep. 1987.
+\end{thebibliography}
+
+\end{document}

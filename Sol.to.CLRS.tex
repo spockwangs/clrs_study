@@ -1,0 +1,71 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Solutions to "Introduction to Algorithms", Second Edition.
+% by wbb
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[11pt]{article}
+\usepackage{fullpage}
+\usepackage{clrscode}
+\usepackage{amsmath, amsfonts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This is the preamble.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\author{wbb}
+\title{Solutions to CLRS}
+\renewcommand{\today}{March 24, 2010}% The date when this file written.
+
+\newcommand{\Exercise}[1]
+    {\begin{flushleft}{\large \textbf{Exercise #1}}\end{flushleft}}
+      
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The text begins here.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\maketitle
+
+\section*{Chapter 24}
+
+\Exercise{24.1-5}
+
+The desired value for each $v$ in $V$ is similar to the $\delta(v)$ in the
+original Bellman-Ford algorithm.  It has the similar property such as
+optimal substructure, upperbound property, convergence property and
+path-relaxation property.  So it can be solved using Bellman-Ford algorithm
+with the $d$ function changed.
+  
+\Exercise{24.4-5}
+
+In fact, the added dummy source $s$ is not really needed.  We just need to
+modify the Bellman-Ford algorithm to initialize all $d[v]$ to 0 and it will
+work well.
+
+Why? The Bellman-Ford algorithm has 2 proedures: relax edges and
+check negative-weight cycles.  We will prove that the algorithm has
+the same effects without the added edges $(s, v)$ as with the added
+edges in the 2 procedures.  When doing relaxation, each added edge
+$(s, v)$ is used only once to relax each $d[v] (v \in V)$ to 0 then it
+will not be used to relax any edge because after having relaxed $d[v]$
+to 0 the relax condition $d[v] < d[s] + w(s, v)$ (simplified to $d[v]
+< 0$) will not be satisfied again.  So we initialize all $d[v]$ to 0
+and the edges $(s, v)$ will be useless.  When checking negative-weight
+cycles, the conditon $d[v] > d[s] + w(s, v)$ is not satisfied whether
+or not negative weight cycles exist.  So the added edges $(s, v)$
+is not needed to check the existence of negative-weight cycles.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The Bibliography
+%
+% \begin{thebibliography}{widest entry}
+%   \bibitem[label1]{cite_key1} bibliographic info
+%   \bibitem[label2]{cite_key2} bibliographic info
+%    ...
+% \end{thebibliography}
+% 
+% We can reference the first bibliography item using \cite{cite_key1} 
+% in the text.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
+
